@@ -34,6 +34,7 @@ def main():
 
     args = get_args()
     directories = glob.glob(args.dir + 'MAC*')
+    print('Hello')
 
     num_sub = 0
     for subdire in directories:
