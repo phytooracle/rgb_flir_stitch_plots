@@ -27,11 +27,18 @@ def get_args():
                         metavar='str',
                         help='Directory in which plot subdirectories are located')
 
+    parser.add_argument('-o',
+                        '--outdir',
+                        metavar='outdir',
+                        type=str,
+                        help='Output directory',
+                        default='plotclip_orthos')
+
     return parser.parse_args()
 
 
 def process_dir(subdir):
-
+    args = get_args()
     start2 = time.time()
 
     plot = subdir.split('/')[-1]
@@ -44,15 +51,15 @@ def process_dir(subdir):
                                    addAlpha=False)
 
     # Create VRT
-    os.chdir(subdir)
-    images = glob.glob('*.tif')
+    #os.chdir(subdir)
+    images = glob.glob(f'{subdir}/*.tif')
     vrt = gdal.BuildVRT('my.vrt', images, options=vrt_options)
 
     # Create geoTiff from VRT
     translateOptions = gdal.TranslateOptions(creationOptions=["TILED=YES",
                                                               "COMPRESS=LZW",
                                                               "BIGTIFF=YES"])
-    gdal.Translate(f'{plot_name}_ortho.tif', vrt, driver="GTiff", options=translateOptions)
+    gdal.Translate(f'{args.outdir}/{plot_name}_ortho.tif', vrt, driver="GTiff", options=translateOptions)
     vrt = None
 
 
@@ -61,6 +68,9 @@ def main():
     """Run 'orthomosaic' here"""
 
     args = get_args()
+
+    if not os.path.isdir(args.outdir):
+        os.makedirs(args.outdir)
 
     start = time.time()
 
