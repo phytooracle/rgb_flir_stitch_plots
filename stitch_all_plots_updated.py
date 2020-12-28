@@ -52,7 +52,7 @@ def process_dir(subdir):
     translateOptions = gdal.TranslateOptions(creationOptions=["TILED=YES",
                                                               "COMPRESS=LZW",
                                                               "BIGTIFF=YES"])
-    gdal.Translate(f'{plot_name}.tif', vrt, driver="GTiff", options=translateOptions)
+    gdal.Translate(f'{plot_name}_ortho.tif', vrt, driver="GTiff", options=translateOptions)
     vrt = None
 
 
