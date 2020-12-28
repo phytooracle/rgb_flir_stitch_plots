@@ -31,32 +31,28 @@ def get_args():
 
 def process_dir(subdire):
 
-    try:
-        start2 = time.time()
+    start2 = time.time()
 
-        plot = subdire.split('/')[-1]
-        plot_split = plot.split(' ')
-        cwd = os.getcwd()
-        plot_name = '_'.join(plot_split)
+    plot = subdire.split('/')[-1]
+    plot_split = plot.split(' ')
+    cwd = os.getcwd()
+    plot_name = '_'.join(plot_split)
 
-        os.chdir(subdire)
+    os.chdir(subdire)
 
-        images = glob.glob('*.tif', recursive=True)
+    images = glob.glob('*.tif', recursive=True)
 
-        img_list = []
-        for i in images:
-            image = i.split('/')[-1]
-            img_list.append(image)
-        img_str = ' '.join(img_list)
+    img_list = []
+    for i in images:
+        image = i.split('/')[-1]
+        img_list.append(image)
+    img_str = ' '.join(img_list)
 
-        cmd = f'gdalbuildvrt mosaic.vrt {img_str}'
-        subprocess.call(cmd, shell=True)
+    cmd = f'gdalbuildvrt mosaic.vrt {img_str}'
+    subprocess.call(cmd, shell=True)
 
-        cmd2 = f'gdal_translate -co COMPRESS=LZW -co BIGTIFF=YES -outsize 100% 100% mosaic.vrt {plot_name}_ortho.tif'
-        subprocess.call(cmd2, shell=True)
-
-    except:
-        pass
+    cmd2 = f'gdal_translate -co COMPRESS=LZW -co BIGTIFF=YES -outsize 100% 100% mosaic.vrt {plot_name}_ortho.tif'
+    subprocess.call(cmd2, shell=True)
 
 # --------------------------------------------------
 def main():
