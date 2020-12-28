@@ -11,6 +11,7 @@ import glob
 import subprocess
 import time
 import multiprocessing
+from osgeo import gdal
 
 start = time.time()
 
@@ -29,30 +30,31 @@ def get_args():
     return parser.parse_args()
 
 
-def process_dir(subdire):
+def process_dir(subdir):
 
     start2 = time.time()
 
-    plot = subdire.split('/')[-1]
+    plot = subdir.split('/')[-1]
     plot_split = plot.split(' ')
     cwd = os.getcwd()
     plot_name = '_'.join(plot_split)
 
-    os.chdir(subdire)
+    vrt_options = gdal.BuildVRTOptions(srcNodata="0 0 0",
+                                   resampleAlg='cubic',
+                                   addAlpha=False)
 
-    images = glob.glob('*.tif', recursive=True)
+    # Create VRT
+    os.chdir(subdir)
+    images = glob.glob('*.tif')
+    vrt = gdal.BuildVRT('my.vrt', images, options=vrt_options)
 
-    img_list = []
-    for i in images:
-        image = i.split('/')[-1]
-        img_list.append(image)
-    img_str = ' '.join(img_list)
+    # Create geoTiff from VRT
+    translateOptions = gdal.TranslateOptions(creationOptions=["TILED=YES",
+                                                              "COMPRESS=LZW",
+                                                              "BIGTIFF=YES"])
+    gdal.Translate(f'{plot_name}.tif', vrt, driver="GTiff", options=translateOptions)
+    vrt = None
 
-    cmd = f'gdalbuildvrt mosaic.vrt {img_str}'
-    subprocess.call(cmd, shell=True)
-
-    cmd2 = f'gdal_translate -co COMPRESS=LZW -co BIGTIFF=YES -outsize 100% 100% mosaic.vrt {plot_name}_ortho.tif'
-    subprocess.call(cmd2, shell=True)
 
 # --------------------------------------------------
 def main():
