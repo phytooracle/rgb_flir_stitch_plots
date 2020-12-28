@@ -24,13 +24,14 @@ def get_args():
 
     parser.add_argument('dir',
                         metavar='str',
-                        nargs='+',
                         help='Directory in which plot subdirectories are located')
 
     return parser.parse_args()
 
 
 def process_dir(subdire):
+
+    try:
         start2 = time.time()
 
         plot = subdire.split('/')[-1]
@@ -54,6 +55,9 @@ def process_dir(subdire):
         cmd2 = f'gdal_translate -co COMPRESS=LZW -co BIGTIFF=YES -outsize 100% 100% mosaic.vrt {plot_name}_ortho.tif'
         subprocess.call(cmd2, shell=True)
 
+    except:
+        pass
+
 # --------------------------------------------------
 def main():
     """Run 'orthomosaic' here"""
@@ -62,8 +66,10 @@ def main():
 
     start = time.time()
 
+    directories = glob.glob(args.dir + '*')
+
     with multiprocessing.Pool(multiprocessing.cpu_count()) as p:
-        p.map(process_dir, args.dir)
+        p.map(process_dir, directories)
 
     end = time.time()
     total_time = end - start
