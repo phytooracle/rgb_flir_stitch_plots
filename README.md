@@ -11,4 +11,4 @@ This script outputs a subdirectory for each plot containing a single plot orthom
 * **Positional Arguments:** 
     * **Directory in which plot subdirectories are located:** 'dir'
 * **Optional Arguments:**
-    * **Output directory:** '--outdir', '-o'
+    * **Output directory:** '-o', '--outdir'
